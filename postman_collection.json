@@ -1,0 +1,177 @@
+{
+  "info": {
+    "name": "Car Rental API",
+    "_postman_id": "car-rental-api-collection",
+    "description": "Collection for Car Rental backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"0123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sign In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signin"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"<refreshToken>\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh-token"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/all-users", "host": ["{{baseUrl}}"], "path": ["api","auth","all-users"] }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/auth/user", "host": ["{{baseUrl}}"], "path": ["api","auth","user"] } }
+        }
+      ]
+    },
+    {
+      "name": "Cars",
+      "item": [
+        {
+          "name": "Create Car (admin, form-data)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": { "mode": "formdata", "formdata": [{ "key": "name", "value": "Tesla Model 3", "type": "text" }, { "key": "pricePerHour", "value": "10", "type": "text" }, { "key": "image", "type": "file" }] },
+            "url": { "raw": "{{baseUrl}}/api/cars", "host": ["{{baseUrl}}"], "path": ["api","cars"] }
+          }
+        },
+        { "name": "Get All Cars", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cars","host":["{{baseUrl}}"],"path":["api","cars"] } } },
+        { "name": "Get Car By Id", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/cars/:id","host":["{{baseUrl}}"],"path":["api","cars",":id"] } } }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"carId\": \"<carId>\",\n  \"date\": \"2026-01-15\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"12:00\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/bookings", "host": ["{{baseUrl}}"], "path": ["api","bookings"] }
+          }
+        },
+        { "name": "Get All Bookings (admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/bookings", "host": ["{{baseUrl}}"], "path": ["api","bookings"] } } },
+        { "name": "Get My Bookings", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/bookings/my-bookings", "host": ["{{baseUrl}}"], "path": ["api","bookings","my-bookings"] } } }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"carName\": \"Tesla\",\n  \"date\": \"2026-01-15\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"12:00\",\n  \"totalCost\": 30,\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"phone\": \"0123456789\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        { "name": "Get Orders (admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] } } }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "Payment Confirmation (webhook)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"transactionId\": \"TXN-12345\",\n  \"status\": \"Successful\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/confirmation", "host": ["{{baseUrl}}"], "path": ["api","confirmation"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "Get Notifications", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/notifications", "host": ["{{baseUrl}}"], "path": ["api","notifications"] } } },
+        { "name": "Delete Notification", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{baseUrl}}/api/notifications/:id", "host": ["{{baseUrl}}"], "path": ["api","notifications",":id"] } } }
+      ]
+    }
+  ]
+}
