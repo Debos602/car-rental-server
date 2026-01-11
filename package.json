@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "name": "car-rental-api",
-=======
   "name": "car-rental-server",
->>>>>>> 099298bf8f2401fb5a54ceb8dd04b6a85cbc7832
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
