@@ -256,7 +256,7 @@ const returnCar = async (req: Request, res: Response): Promise<void> => {
 
 const deleteSingleBooking = async (req: Request, res: Response) => {
   try {
-    const { bookingId } = req.params;
+    const { bookingId } = Array.isArray(req.params) ? req.params[0] : req.params;
 
     const result = await BookingServices.deleteSingleBookingfromDb(bookingId);
 
@@ -287,7 +287,7 @@ const deleteSingleBooking = async (req: Request, res: Response) => {
 
 const updateBookingInDb = async (req: Request, res: Response) => {
   try {
-    const { bookingId } = req.params;
+    const { bookingId } = Array.isArray(req.params) ? req.params[0] : req.params;
     const bookingData = req.body;
 
     // Update the booking using the ID

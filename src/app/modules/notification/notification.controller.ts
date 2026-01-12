@@ -41,7 +41,7 @@ const markReadByUser = async (req: Request, res: Response) => {
 const markUnreadByUser = async (req: Request, res: Response) => {
     try {
         const userId = req.user?._id;
-        const notificationId = req.params.id;
+        const notificationId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
         if (!userId) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
@@ -55,7 +55,7 @@ const markUnreadByUser = async (req: Request, res: Response) => {
 
 const deleteNotification = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { id } = Array.isArray(req.params) ? req.params[0] : req.params;
         const result = await NotificationServices.deleteNotificationById(id);
         if (!result) {
             return res.status(404).json({ success: false, message: 'Notification not found' });

@@ -262,7 +262,7 @@ const updateUserinDb = async (req: Request, res: Response) => {
 
 const updateUserRoleInDb = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId; // Ensure this corresponds to your route definition
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId; // Ensure this corresponds to your route definition
 
     const { role } = req.body;
 

@@ -61,7 +61,7 @@ const getAvailableCar = async (req: Request, res: Response) => {
 
 const getSingleCar = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const result = await CarServices.getSingleCar(id);
     if (!result) {
       return res.status(404).json({
@@ -134,7 +134,7 @@ const updateCarInDb = async (req: Request, res: Response) => {
 
 const updateCarStatus = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const { status } = req.body;
 
     const result = await CarServices.updateCarStatus(id, status);
@@ -166,7 +166,7 @@ const updateCarStatus = async (req: Request, res: Response) => {
 
 const deleteCarformDb = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const result = await CarServices.deleteCar(id);
 
     res.status(200).json({
