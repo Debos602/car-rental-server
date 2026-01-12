@@ -8,11 +8,12 @@ export const initSocket = (server: http.Server) => {
     io = new Server(server, {
         cors: {
             origin: config.Client_url || "http://localhost:5173",
-
             credentials: true,
         },
+        // এই দুটো লাইন অ্যাড করো
+        pingTimeout: 60000,       // 60 সেকেন্ড (ডিফল্ট 5s ছিল)
+        pingInterval: 25000,      // প্রতি 25 সেকেন্ডে ping
     });
-
     // Socket server তৈরি হয়ে গেছে, এখন client count দেখানো যায়
     const initialCount = io?.sockets?.sockets?.size ?? io?.engine?.clientsCount ?? 0;
     console.log('Socket initialized, connected clients:', initialCount);
