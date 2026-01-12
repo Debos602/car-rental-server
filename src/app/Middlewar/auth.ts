@@ -20,7 +20,7 @@ const auth = (requiredRole: string) => {
     // Extract the token by removing the "Bearer " prefix
     const token = authHeader.split(' ')[1];
 
-    console.log('Token:', token);
+    // console.log('Token:', token);
 
     // Verify the token-
     const decoded = jwt.verify(

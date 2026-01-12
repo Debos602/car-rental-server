@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { BookingServices } from './booking.service';
 import { NotificationServices } from '../notification/notification.service';
 import { CarServices } from '../car/car.service';
+import { getIo } from '../../socket';
 
 
 
@@ -38,13 +39,29 @@ const createBookingInDb = async (req: Request, res: Response) => {
     }
 
     // Create a notification for the user about the booking
+    // After NotificationServices.createNotification(...)
     try {
       const title = 'Booking Created';
-      const message = `Your booking for ${result.car?.name || 'the car'} on ${result.date?.toISOString().split('T')[0]} from ${result.startTime} to ${result.endTime} has been created.`;
-      await NotificationServices.createNotification({ userId: userId?.toString(), bookingId: result._id?.toString(), title, message });
+      const messageText = `Your booking for ${result.car?.name || 'the car'} on ${result.date?.toISOString().split('T')[0]} from ${result.startTime} to ${result.endTime} has been created.`;
+
+      const notification = await NotificationServices.createNotification({
+        userId: userId?.toString(),
+        bookingId: result._id?.toString(),
+        title,
+        message: messageText
+      });
+
+      // ✅ Emit via Socket.IO
+      const io = getIo();
+      if (io) {
+        // Assuming you use room = userId
+        io.to(userId?.toString()).emit('new-notification', notification);
+        console.log('Notification emitted via socket for user:', userId);
+      }
     } catch (notifyErr) {
       console.error('Failed to create booking notification:', notifyErr);
     }
+
 
     res.status(201).json({
       success: true,
