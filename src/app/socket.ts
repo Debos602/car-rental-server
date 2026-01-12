@@ -14,36 +14,46 @@ export const initSocket = (server: http.Server) => {
     });
 
     // Socket server তৈরি হয়ে গেছে, এখন client count দেখানো যায়
-    console.log('Socket initialized, connected clients:', io.engine.clientsCount);
+    const initialCount = io?.sockets?.sockets?.size ?? io?.engine?.clientsCount ?? 0;
+    console.log('Socket initialized, connected clients:', initialCount);
 
     io.on('connection', (socket) => {
-        console.log('Socket connected:', socket.id);
+        const currentCount = io?.sockets?.sockets?.size ?? io?.engine?.clientsCount ?? 0;
+        console.log('Socket connected:', socket.id, 'connected clients:', currentCount);
 
         socket.on('join', (room) => {
             try {
                 socket.join(room);
                 console.log(`Socket ${socket.id} joined room: ${room}`);
+
+                // Diagnostic: report whether the room now exists and its member count
+                const roomExists = !!io?.sockets?.adapter?.rooms?.has(room);
+                const roomSize = roomExists ? io?.sockets?.adapter?.rooms?.get(room)?.size ?? 0 : 0;
+                console.log(`Room '${room}' exists: ${roomExists}, members: ${roomSize}`);
+
             } catch (err) {
                 console.error('Error joining room:', err);
             }
         });
 
         socket.on('disconnect', () => {
-            console.log('Socket disconnected:', socket.id);
+            const afterDisconnectCount = io?.sockets?.sockets?.size ?? io?.engine?.clientsCount ?? 0;
+            console.log('Socket disconnected:', socket.id, 'connected clients:', afterDisconnectCount);
         });
     });
 
     return io;
 };
 
-console.log('Socket module loaded', io);
+console.log('Socket module loaded', !!io);
 
 export const getIo = () => io;
 
 // Helper to print connected clients
 export const logSocketStatus = () => {
     if (io) {
-        console.log('Connected clients:', io.engine.clientsCount);
+        const count = io?.sockets?.sockets?.size ?? io?.engine?.clientsCount ?? 0;
+        console.log('Connected clients:', count);
     } else {
         console.log('Socket server not initialized');
     }

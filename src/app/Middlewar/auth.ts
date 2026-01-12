@@ -28,7 +28,7 @@ const auth = (requiredRole: string) => {
       config.jwt_access_token_secret as string,
     ) as jwt.JwtPayload;
 
-    console.log('Decoded:', decoded);
+    // console.log('Decoded:', decoded);
     if (decoded.role !== requiredRole) {
       throw new AppError(httpStatus.FORBIDDEN, 'You are forbidden');
     }

@@ -39,7 +39,6 @@ const createBookingInDb = async (req: Request, res: Response) => {
     }
 
     // Create a notification for the user about the booking
-    // After NotificationServices.createNotification(...)
     try {
       const title = 'Booking Created';
       const messageText = `Your booking for ${result.car?.name || 'the car'} on ${result.date?.toISOString().split('T')[0]} from ${result.startTime} to ${result.endTime} has been created.`;
@@ -51,17 +50,35 @@ const createBookingInDb = async (req: Request, res: Response) => {
         message: messageText
       });
 
-      // ✅ Emit via Socket.IO
+      // ✅ Emit via Socket.IO - Fixed to emit 'new-notification'
       const io = getIo();
       if (io) {
-        // Assuming you use room = userId
-        io.to(userId?.toString()).emit('new-notification', notification);
-        console.log('Notification emitted via socket for user:', userId);
+        const room = userId?.toString();
+
+        // For newer Socket.IO versions (v4+), we don't need to check room existence
+        // The socket.to() method handles it automatically
+        if (room) {
+          // Emit to the specific user room
+          io.to(room).emit('new-notification', {
+            ...notification.toObject(),
+            // Ensure proper formatting for the client
+            createdAt: notification.createdAt?.toISOString(),
+            updatedAt: notification.updatedAt?.toISOString(),
+          });
+          console.log('Notification emitted to room:', room, 'Event: new-notification');
+        } else {
+          // Fallback: emit globally
+          io.emit('new-notification', {
+            ...notification.toObject(),
+            createdAt: notification.createdAt?.toISOString(),
+            updatedAt: notification.updatedAt?.toISOString(),
+          });
+          console.warn('User ID not available; emitted globally with event: new-notification');
+        }
       }
     } catch (notifyErr) {
       console.error('Failed to create booking notification:', notifyErr);
     }
-
 
     res.status(201).json({
       success: true,
