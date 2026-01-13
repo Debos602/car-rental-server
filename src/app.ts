@@ -13,13 +13,27 @@ import config from './app/config';
 
 const app: Application = express();
 
-const corsOptions = {
-  origin: config.Client_url, // Frontend origin
-  credentials: true, // Allow credentials (cookies, auth headers)
-};
-
 app.use(express.json());
-app.use(cors(corsOptions));
+
+// CORS configuration
+const allowedOrigins = [
+  `${config.Client_url}`
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+
 app.use(cookieParser()); // Add cookie-parser middleware
 app.use(express.static(path.join(__dirname, 'public')));
 
