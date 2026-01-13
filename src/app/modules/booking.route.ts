@@ -13,7 +13,7 @@ router.get(
   BookingController.getAllBookingsUserFromDb,
 );
 
-router.delete('/bookings/:bookingId', BookingController.deleteSingleBooking);
+router.delete('/bookings/:bookingId', auth(), BookingController.deleteSingleBooking);
 router.patch(
   '/bookings/:bookingId',
   auth('admin'),

@@ -3,6 +3,7 @@ import { BookingServices } from './booking.service';
 import { NotificationServices } from '../notification/notification.service';
 import { CarServices } from '../car/car.service';
 import { getIo } from '../../socket';
+import BookingModel from './booking.model';
 
 
 
@@ -296,31 +297,50 @@ const returnCar = async (req: Request, res: Response): Promise<void> => {
 const deleteSingleBooking = async (req: Request, res: Response) => {
   try {
     const { bookingId } = Array.isArray(req.params) ? req.params[0] : req.params;
+    const userId = req.user?._id?.toString(); // ID of the user making the request
+    const userRole = req.user?.role;
+
+    console.log('Delete request for bookingId:', bookingId);
+    console.log('User ID from req.user:', userId || 'MISSING');
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+
+    // Ensure booking exists and check ownership
+    const booking = await BookingModel.findById(bookingId).exec();
+    if (!booking) {
+      return res.status(404).json({ success: false, statusCode: 404, message: 'Booking not found' });
+    }
+
+    const bookingOwnerId = booking.user?.toString();
+
+    // Allow deletion if user is the owner or an admin
+    if (userRole !== 'admin' && bookingOwnerId !== userId) {
+      return res.status(403).json({ success: false, message: 'You are not authorized to delete this booking' });
+    }
 
     const result = await BookingServices.deleteSingleBookingfromDb(bookingId);
 
     if (!result) {
-      return res.status(404).json({
-        success: false,
-        statusCode: 404,
-        message: 'Booking not found',
-        data: {},
-      });
+      return res.status(404).json({ success: false, statusCode: 404, message: 'Booking not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      statusCode: 200,
-      message: 'Booking deleted successfully',
-      data: result,
-    });
+    // Emit realtime event to the booking owner
+    const io = getIo();
+    if (io && bookingOwnerId) {
+      const room = bookingOwnerId;
+      io.to(room).emit('booking-deleted', {
+        bookingId,
+        message: 'Your booking has been deleted',
+      });
+      console.log('Emitted booking-deleted event to room:', room, 'for booking:', bookingId);
+    }
+
+    res.status(200).json({ success: true, statusCode: 200, message: 'Booking deleted successfully', data: result });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      statusCode: 500,
-      message: 'An error occurred while deleting the booking',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    console.error('Error deleting booking:', error);
+    res.status(500).json({ success: false, message: 'Error deleting booking', error: error instanceof Error ? error.message : 'Unknown error' });
   }
 };
 
