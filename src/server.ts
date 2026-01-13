@@ -25,7 +25,7 @@ async function main() {
       console.error('Socket engine connection_error:', err);
     });
 
-    server.listen(config.port, "0.0.0.0", () => {
+    server.listen(config.port, () => {
       console.log(`Server listening on port ${config.port}`);
       logSocketStatus();
     });
