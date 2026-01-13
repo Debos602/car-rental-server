@@ -7,6 +7,11 @@ import { getIo } from '../../socket';
 
 
 const createBookingInDb = async (req: Request, res: Response) => {
+  // console.log("=== Booking API Request Received ===");
+  // console.log("Headers:", req.headers);
+  // console.log("Authorization header:", req.headers.authorization);
+  // console.log("User from middleware (req.user):", req.user ? req.user._id : "UNDEFINED - Auth middleware failed");
+  // console.log("Request Body:", req.body);
   try {
     const { carId, date, startTime, endTime } = req.body;
     const userId = req.user?._id;

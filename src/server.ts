@@ -1,3 +1,6 @@
+console.log("🔥 REAL BACKEND PROCESS STARTED 🔥", process.pid);
+
+
 import mongoose from 'mongoose';
 import config from './app/config';
 import app from './app';
@@ -5,6 +8,8 @@ import http from 'http';
 import { initSocket, getIo, logSocketStatus } from './app/socket';
 
 async function main() {
+
+
   try {
     await mongoose.connect(config.database_url as string);
     console.log('MongoDB connected');
@@ -20,10 +25,11 @@ async function main() {
       console.error('Socket engine connection_error:', err);
     });
 
-    server.listen(config.port, () => {
+    server.listen(config.port, "0.0.0.0", () => {
       console.log(`Server listening on port ${config.port}`);
-      logSocketStatus(); // initial status
+      logSocketStatus();
     });
+
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
