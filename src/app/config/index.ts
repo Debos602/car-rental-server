@@ -22,6 +22,7 @@ const config = {
   Payment_url: process.env.Payment_url,
   Payment_verify_url: process.env.Payment_verify_url,
   Client_url: process.env.CLIENT_URL,
+  Server_url: process.env.SERVER_URL,
 };
 
 export default config;

@@ -49,8 +49,8 @@ const createBooking = async (
       startTime,
       endTime,
       totalCost,
-      status: endTime ? 'completed' : 'ongoing',
-      paymentStatus: endTime ? 'paid' : 'pending',
+      status: "pending",
+      paymentStatus: "unpaid",
     });
 
     // 🔹 Update car status
