@@ -15,23 +15,30 @@ const app: Application = express();
 
 app.use(express.json());
 
-// CORS configuration
-const allowedOrigins = [
-  `${config.Client_url}`
-];
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    console.log("CORS origin:", origin); // debug
+
+    // AmarPay / Postman / browser direct hit → allow
+    if (!origin || origin === "") return callback(null, true);
+
+    const allowedOrigins = [
+      config.Client_url,
+      config.Server_url,
+    ].filter(Boolean);
+
+    // Valid frontend origins → allow
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+
+    // অন্য সব origin → block
+    return callback(null, false); // throw না, শুধু blocked
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+
 
 
 app.use(cookieParser()); // Add cookie-parser middleware
