@@ -8,6 +8,8 @@ const createOrderInDb = async (req: Request, res: Response) => {
     // Attempt to create the order and initiate payment
     const result = await OrderServices.createOrder(data);
 
+    console.log("result...", result);
+
     res.status(201).json({
       success: true,
       statusCode: 201,

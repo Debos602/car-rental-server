@@ -1,5 +1,6 @@
 import { join } from 'path';
 import OrderModel from '../order/order.model';
+import BookingModel from '../booking/booking.model';
 import { verifyPayment } from './payment.utils';
 import { readFileSync } from 'fs';
 import { NotificationServices } from '../notification/notification.service';
@@ -52,6 +53,32 @@ const confirmationService = async (transactionId: string, status: string) => {
       }
     } catch (notifyErr) {
       console.error('Failed to create payment notifications:', notifyErr);
+    }
+    // Update related bookings to mark them as paid
+    try {
+      const orders = await OrderModel.find({ transactionId }).exec();
+      for (const ord of orders) {
+        try {
+          const user = await UserModel.findOne({ email: ord.email }).exec();
+          const userId = user?._id;
+
+          // Try to update bookings that match the user and key order properties
+          const filter: any = {};
+          if (userId) filter.user = userId;
+          if (ord.totalCost !== undefined) filter.totalCost = ord.totalCost;
+          if (ord.date) filter.date = ord.date;
+          if (ord.startTime) filter.startTime = ord.startTime;
+
+          if (Object.keys(filter).length > 0) {
+            const res = await BookingModel.updateMany(filter, { paymentStatus: 'paid' });
+            console.log(`Updated ${res.modifiedCount} booking(s) to paid for order ${ord._id}`);
+          }
+        } catch (bkErr) {
+          console.error('Failed to update related bookings for order', ord._id, bkErr);
+        }
+      }
+    } catch (bkOuterErr) {
+      console.error('Failed to find orders for booking update:', bkOuterErr);
     }
   } else {
     message = 'Payment failed'; // Set the failure message
