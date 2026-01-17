@@ -90,6 +90,14 @@ const markReadByUser = async (userId: string) => {
     );
     return result;
 };
+const markReadSingle = async (userId: string, notificationId: string) => {
+    const result = await NotificationModel.findOneAndUpdate(
+        { user: userId, _id: notificationId },
+        { read: true },
+        { new: true },
+    ).exec();
+    return result;
+};
 const markUnreadByUser = async (userId: string, notificationId: string) => {
     const result = await NotificationModel.updateMany(
         { user: userId, _id: notificationId, read: true },
@@ -110,5 +118,6 @@ export const NotificationServices = {
     deleteNotificationById,
     deleteNotificationsByBookingId,
     markReadByUser,
+    markReadSingle,
     markUnreadByUser
 };
