@@ -3,14 +3,18 @@ import BookingModel from './booking.model';
 import CarModel from '../car/car.model';
 import { NotificationServices } from '../notification/notification.service';
 
-const calculateHours = (startTime: string, endTime: string) => {
-  const [sh, sm] = startTime.split(':').map(Number);
-  const [eh, em] = endTime.split(':').map(Number);
+const calculateHoursFromISO = (startTime: string, endTime: string): number => {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
 
-  const start = sh + sm / 60;
-  const end = eh + em / 60;
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    throw new Error('Invalid startTime or endTime format');
+  }
 
-  return end - start;
+  const diffMs = end.getTime() - start.getTime();
+  const hours = diffMs / (1000 * 60 * 60);
+
+  return hours;
 };
 
 const createBooking = async (
@@ -19,58 +23,71 @@ const createBooking = async (
   date: string,
   startTime: string,
   endTime: string,
+  extras?: {
+    insurance?: boolean;
+    gps?: boolean;
+    childSeat?: boolean;
+  },
 ) => {
   try {
-    // 🔹 Find car first (price needed)
+    // 🔹 1. Find car
     const car = await CarModel.findById(carId);
-
     if (!car) {
       throw new Error('Car not found');
     }
 
-    // 🔹 Calculate total cost
-    let totalCost = 0;
-
-    if (endTime) {
-      const hours = calculateHours(startTime, endTime);
-
-      if (hours <= 0) {
-        throw new Error('End time must be greater than start time');
-      }
-
-      totalCost = hours * car.pricePerHour;
+    // 🔹 2. Calculate duration
+    const hours = calculateHoursFromISO(startTime, endTime);
+    if (hours <= 0) {
+      throw new Error('End time must be greater than start time');
     }
 
-    // 🔹 Create booking with calculated cost
+    // 🔹 3. Validate price
+    const pricePerHour = Number(car.pricePerHour);
+    if (isNaN(pricePerHour) || pricePerHour <= 0) {
+      throw new Error('Invalid car price');
+    }
+
+    // 🔹 4. Base cost
+    let totalCost = pricePerHour * hours;
+
+    // 🔹 5. Extras cost
+    if (extras?.insurance) totalCost += 15 * hours;
+    if (extras?.gps) totalCost += 5 * hours;
+    if (extras?.childSeat) totalCost += 10 * hours;
+
+    // 🔹 6. Final validation
+    totalCost = Math.round((totalCost + Number.EPSILON) * 100) / 100;
+    if (isNaN(totalCost) || totalCost <= 0) {
+      throw new Error('Total cost calculation failed');
+    }
+
+    // 🔹 7. Create booking
     const booking = await BookingModel.create({
       car: carId,
       user: userId,
       date,
       startTime,
       endTime,
+      extras,
       totalCost,
-      status: "pending",
-      paymentStatus: "unpaid",
+      status: 'pending',
+      paymentStatus: 'unpaid',
     });
 
-    // 🔹 Update car status
+    // 🔹 8. Update car status
     await CarModel.findByIdAndUpdate(carId, {
       status: 'unavailable',
     });
 
-    // 🔹 Populate booking
+    // 🔹 9. Populate & return
     const populatedBooking = await BookingModel.findById(booking._id)
       .populate('user')
-      .populate('car')
-      .exec();
-
-    if (!populatedBooking) {
-      throw new Error('Booking not found');
-    }
+      .populate('car');
 
     return populatedBooking;
   } catch (error) {
-    throw new Error(`Error creating booking: ${error}`);
+    throw new Error(`Error creating booking: ${(error as Error).message}`);
   }
 };
 
