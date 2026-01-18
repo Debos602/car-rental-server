@@ -30,6 +30,15 @@ const createBookingInDb = async (req: Request, res: Response) => {
       endTime,
     );
 
+    // Ensure booking was created
+    if (!result) {
+      console.error('Booking service returned null/undefined');
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create booking',
+      });
+    }
+
     // Update the car status to 'unavailable' after booking is created
     try {
       await CarServices.updateCarStatus(carId, 'unavailable');
