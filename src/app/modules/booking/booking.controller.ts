@@ -76,7 +76,7 @@ const createBookingInDb = async (req: Request, res: Response) => {
             createdAt: notification.createdAt?.toISOString(),
             updatedAt: notification.updatedAt?.toISOString(),
           });
-          console.log('Notification emitted to room:', room, 'Event: new-notification');
+          // console.log('Notification emitted to room:', room, 'Event: new-notification');
         } else {
           // Fallback: emit globally
           io.emit('new-notification', {
@@ -84,7 +84,7 @@ const createBookingInDb = async (req: Request, res: Response) => {
             createdAt: notification.createdAt?.toISOString(),
             updatedAt: notification.updatedAt?.toISOString(),
           });
-          console.warn('User ID not available; emitted globally with event: new-notification');
+          // console.warn('User ID not available; emitted globally with event: new-notification');
         }
       }
     } catch (notifyErr) {
