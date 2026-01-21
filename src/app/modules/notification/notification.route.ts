@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/notifications', auth('user'), NotificationController.getNotifications);
 router.get('/notifications/admin', auth('admin'), NotificationController.getAllNotificationfromDb);
 router.delete('/notifications/:id', auth('user'), NotificationController.deleteNotification);
-router.patch('/notifications/mark-read/:id', auth('user'), NotificationController.markReadSingle);
-router.patch('/notifications/mark-read', auth('user'), NotificationController.markReadByUser);
-router.patch('/notifications/mark-unread/:id', auth('user'), NotificationController.markUnreadByUser);
+router.patch('/notifications/mark-read/:id', auth(['user', 'admin']), NotificationController.markReadSingle);
+router.patch('/notifications/mark-read', auth(['user', 'admin']), NotificationController.markReadByUser);
+router.patch('/notifications/mark-unread/:id', auth(['user', 'admin']), NotificationController.markUnreadByUser);
 
 export const NotificationRoutes = router;
