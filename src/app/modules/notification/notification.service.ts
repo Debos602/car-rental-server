@@ -110,6 +110,10 @@ const deleteNotificationById = async (id: string) => {
     const result = await NotificationModel.findByIdAndDelete(id);
     return result;
 };
+const deleteNotificationByAdmin = async (id: string) => {
+    const result = await NotificationModel.findByIdAndDelete(id);
+    return result;
+};
 
 export const NotificationServices = {
     createNotification,
@@ -119,5 +123,6 @@ export const NotificationServices = {
     deleteNotificationsByBookingId,
     markReadByUser,
     markReadSingle,
-    markUnreadByUser
+    markUnreadByUser,
+    deleteNotificationByAdmin
 };

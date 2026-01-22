@@ -83,6 +83,19 @@ const deleteNotification = async (req: Request, res: Response) => {
     }
 };
 
+const deleteNotificationByAdminFromDb = async (req: Request, res: Response) => {
+    try {
+        const { id } = Array.isArray(req.params) ? req.params[0] : req.params;
+        const result = await NotificationServices.deleteNotificationByAdmin(id);
+        if (!result) {
+            return res.status(404).json({ success: false, message: 'Notification not found' });
+        }
+        res.status(200).json({ success: true, message: 'Deleted by admin', data: result });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err instanceof Error ? err.message : 'Error' });
+    }
+};
+
 export const NotificationController = {
     getNotifications,
     deleteNotification,
@@ -90,4 +103,5 @@ export const NotificationController = {
     markReadSingle,
     markUnreadByUser,
     getAllNotificationfromDb,
+    deleteNotificationByAdminFromDb
 };
