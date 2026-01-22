@@ -1,7 +1,7 @@
 import express from 'express';
-import { UserControllers } from './user/user.controller';
-import auth from '../Middlewar/auth';
-import { multerUploadForUsers } from '../config/multer.config';
+import { UserControllers } from './user.controller';
+import auth from '../../Middlewar/auth';
+import { multerUploadForUsers } from '../../config/multer.config';
 
 const router = express.Router();
 

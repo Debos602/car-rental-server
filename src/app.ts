@@ -1,10 +1,10 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser'; // Import cookie-parser
-import { UserRoutes } from './app/modules/user.route';
-import { CarRoutes } from './app/modules/car.route';
-import { BookingRoutes } from './app/modules/booking.route';
-import { OrderRoutes } from './app/modules/order.route';
+import { UserRoutes } from './app/modules/user/user.route';
+import { CarRoutes } from './app/modules/car/car.route';
+import { BookingRoutes } from './app/modules/booking/booking.route';
+import { OrderRoutes } from './app/modules/order/order.route';
 import { PaymentRoutes } from './app/modules/payment/payment.route';
 import { NotificationRoutes } from './app/modules/notification/notification.route';
 import path from 'path';

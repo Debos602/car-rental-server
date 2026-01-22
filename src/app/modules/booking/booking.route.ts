@@ -1,7 +1,7 @@
 import express from 'express';
 
-import auth from '../Middlewar/auth';
-import { BookingController } from './booking/booking.controller';
+import auth from '../../Middlewar/auth';
+import { BookingController } from './booking.controller';
 
 const router = express.Router();
 

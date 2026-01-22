@@ -1,8 +1,8 @@
 import express from 'express';
-import { CarControllers } from './car/car.controller';
-import auth from '../Middlewar/auth';
-import { BookingController } from './booking/booking.controller';
-import { multerUpload } from '../config/multer.config';
+import { CarControllers } from './car.controller';
+import auth from '../../Middlewar/auth';
+import { BookingController } from '../booking/booking.controller';
+import { multerUpload } from '../../config/multer.config';
 
 const router = express.Router();
 
