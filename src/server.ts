@@ -3,6 +3,9 @@ import config from './app/config';
 import app from './app';
 import http from 'http';
 import { initSocket } from './app/socket';
+import dns from 'dns';
+
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 async function main() {
   try {
